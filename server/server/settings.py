@@ -82,6 +82,7 @@ INSTALLED_APPS = [
 
     # Your apps
     'customer',
+    'books'
 ]
 
 CSRF_COOKIE_SECURE = True
@@ -193,8 +194,4 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-AUTH_USER_MODEL = 'customer.Customer'#
-
-print("SECRET_KEY:", os.getenv("DJANGO_SECRET_KEY"))
-print("DATABASE_URL:", os.getenv("DATABASE_URL"))
-print("CLOUDINARY_URL:", os.getenv("CLOUDINARY_URL"))
+AUTH_USER_MODEL = 'customer.Customer'
