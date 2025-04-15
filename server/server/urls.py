@@ -21,7 +21,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('customer.urls'))
+    path('', include('customer.urls')),
+    path('', include('books.urls'))
 ]
 
 # Serve media files from static folder
