@@ -82,7 +82,8 @@ INSTALLED_APPS = [
 
     # Your apps
     'customer',
-    'books'
+    'books',
+    'contact'
 ]
 
 CSRF_COOKIE_SECURE = True
