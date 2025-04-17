@@ -10,10 +10,21 @@ const Details = () => {
   const [comments, setComments] = useState(null);
   const [newComment, setNewComment] = useState("");
   const isAuthenticated = localStorage.getItem("token");
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedComment, setEditedComment] = useState();
+  const [editingId, setEditingId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
 
   const { id } = useParams();
+
+  const toggleComment = (id) => {
+    if (editingId === id) {
+      setEditingId(null);
+      setEditedComment("");
+    } else {
+      const commentToEdit = comments.find((comment) => comment.id === id);
+      setEditingId(id);
+      setEditedComment(commentToEdit?.text || "");
+    }
+  };
 
   const fetchComments = async () => {
     try {
@@ -56,51 +67,61 @@ const Details = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
 
-    // Send a POST request to the backend to add the comment
-    if (newComment.trim()) {
-      try {
-        const commentData = {
-          text: newComment,
-          book: id,
-        };
+    if (!newComment.trim()) {
+      setError("Comment cannot be empty.");
+      return;
+    }
+    if (newComment.length > 300) {
+      setError("Comment cannot exceed 300 characters.");
+      return;
+    }
 
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/comments/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Token ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(commentData),
-          }
-        );
+    try {
+      const commentData = {
+        text: newComment.trim(),
+        book: id,
+      };
 
-        if (!response.ok) {
-          throw new Error("Failed to add comment");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/comments/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(commentData),
         }
+      );
 
-        // The response should ideally return the newly created comment
-        const addedComment = await response.json();
-
-        // Add the new comment to the existing comments in the state
-        setComments([addedComment, ...comments]);
-
-        // Clear the input fields
-        setNewComment("");
-      } catch (err) {
-        setError(err.message);
+      if (!response.ok) {
+        throw new Error("Failed to add comment");
       }
+
+      const addedComment = await response.json();
+      setComments([addedComment, ...comments]);
+      setNewComment("");
+      setError(null);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   const handleEditSubmit = async (e, comment) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault();
+
+    if (!editedComment.trim()) {
+      setError("Edited comment cannot be empty.");
+      return;
+    }
+    if (editedComment.length > 300) {
+      setError("Edited comment cannot exceed 300 characters.");
+      return;
+    }
 
     try {
-      // Ensure editedComment is just a string
       const updatedCommentData = {
-        text: editedComment, // Only the string to update
+        text: editedComment.trim(),
       };
 
       const response = await fetch(
@@ -111,7 +132,7 @@ const Details = () => {
             "Content-Type": "application/json",
             Authorization: `Token ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify(updatedCommentData), // Only send the necessary fields (e.g., text)
+          body: JSON.stringify(updatedCommentData),
         }
       );
 
@@ -120,21 +141,20 @@ const Details = () => {
       }
 
       const updatedComment = await response.json();
-
-      // Update the comment in the state
       setComments((prevComments) =>
         prevComments.map((c) =>
           c.id === updatedComment.id ? updatedComment : c
         )
       );
 
-      setIsEditing(false); // Close the editing state
+      setEditingId(null);
+      setEditedComment("");
+      setError(null);
     } catch (error) {
       setError(error.message);
     }
   };
 
-  // Handle delete request
   const handleDelete = async (commentId) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) {
       return;
@@ -174,7 +194,7 @@ const Details = () => {
     );
   }
 
-  if (error) {
+  if (error && !book) {
     return (
       <Layout>
         <p className="text-center text-lg font-semibold text-red-500">
@@ -196,16 +216,12 @@ const Details = () => {
   return (
     <Layout>
       <div className="p-6 max-w-5xl mx-auto">
-        {/* Responsive Flexbox: Column on small screens, Row on large screens */}
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6">
-          {/* Book Cover */}
           <img
-            src={import.meta.env.VITE_CLOUDINARY_URL+book.cover_image}
+            src={import.meta.env.VITE_CLOUDINARY_URL + book.cover_image}
             alt={book.title}
             className="w-full lg:w-1/3 h-80 object-cover rounded-lg shadow-lg"
           />
-
-          {/* Book Details */}
           <div className="flex-1">
             <h1 className="text-3xl font-bold">{book.title}</h1>
             <p className="mt-1 text-gray-600 text-sm">By {book.author}</p>
@@ -215,52 +231,63 @@ const Details = () => {
           </div>
         </div>
 
-        {/* Comments Section */}
         <div className="mt-8">
           {comments && comments.length > 0 ? (
             <>
               <h2 className="text-xl font-semibold border-b pb-2">Comments</h2>
+              {error && (
+                <p className="text-red-500 font-semibold mt-2">{error}</p>
+              )}
               <div className="mt-3 space-y-3">
                 {comments.map((comment) => (
                   <div
                     key={comment.id}
                     className="border p-3 rounded bg-gray-100 shadow-sm flex flex-row justify-between items-center"
                   >
-                    {isEditing ? (
-                      <form
-                        onSubmit={(e) => handleEditSubmit(e, comment)}
-                        className="mt-2 flex flex-row justify-center items-center space-x-4"
-                      >
-                        <textarea
-                          className="w-full border rounded-lg p-2"
-                          value={editedComment}
-                          onChange={(e) => setEditedComment(e.target.value)}
-                        />
-                        <button
-                          className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                          type="submit"
-                        >
-                          Save
-                        </button>
-                      </form>
-                    ) : (
-                      <p className="text-gray-900">{comment.text}</p>
-                    )}
-                    <div className="flex flex-row justfify-center items-center space-x-4">
+                    <div className="flex flex-row justify-center items-center space-x-4">
                       <p className="text-sm font-semibold text-gray-700">
                         Commented By {comment.customer.username}
                       </p>
+                      <p className="text-teal-900 font-bold">{comment.text}</p>
                       {localStorage.getItem("user") ===
                         comment.customer?.username && (
                         <div className="flex space-x-2">
-                          {/* Edit Icon */}
-                          <button onClick={() => setIsEditing(!isEditing)}>
-                            <Pencil className="w-5 h-5 text-blue-500 hover:text-blue-700 cursor-pointer" />
-                          </button>
-                          {/* Delete Icon */}
-                          <button onClick={() => handleDelete(comment.id)}>
-                            <Trash className="w-5 h-5 text-red-500 hover:text-red-700 cursor-pointer" />
-                          </button>
+                          {editingId === comment.id ? (
+                            <form
+                              onSubmit={(e) => handleEditSubmit(e, comment)}
+                              className="mt-2 flex flex-row justify-center items-center space-x-4"
+                            >
+                              <textarea
+                                className="w-full border rounded-lg p-2"
+                                value={editedComment}
+                                onChange={(e) =>
+                                  setEditedComment(e.target.value)
+                                }
+                              />
+                              <button
+                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                type="submit"
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                type="button"
+                                onClick={() => toggleComment(comment.id)}
+                              >
+                                Cancel
+                              </button>
+                            </form>
+                          ) : (
+                            <div>
+                              <button onClick={() => toggleComment(comment.id)}>
+                                <Pencil className="w-5 h-5 text-blue-500 hover:text-blue-700 cursor-pointer" />
+                              </button>
+                              <button onClick={() => handleDelete(comment.id)}>
+                                <Trash className="w-5 h-5 text-red-500 hover:text-red-700 cursor-pointer" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -272,8 +299,10 @@ const Details = () => {
             <p>No comments yet.</p>
           )}
 
-          {/* Comment Form */}
           <h2 className="text-xl font-semibold my-5">Add Your Comment</h2>
+          {error && (
+            <p className="text-red-500 font-semibold mb-3">{error}</p>
+          )}
           {isAuthenticated ? (
             <form onSubmit={handleCommentSubmit} className="mt-6">
               <textarea
