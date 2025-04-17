@@ -10,10 +10,15 @@ const Details = () => {
   const [comments, setComments] = useState(null);
   const [newComment, setNewComment] = useState("");
   const isAuthenticated = localStorage.getItem("token");
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [editedComment, setEditedComment] = useState();
 
   const { id } = useParams();
+
+  
+  const toggleComment = (id) => {
+    setEditingId(prev => (prev === id ? null : id));
+  };
 
   const fetchComments = async () => {
     try {
@@ -128,7 +133,7 @@ const Details = () => {
         )
       );
 
-      setIsEditing(false); // Close the editing state
+      setEditingId(null); // Close the editing state
     } catch (error) {
       setError(error.message);
     }
@@ -224,43 +229,52 @@ const Details = () => {
                 {comments.map((comment) => (
                   <div
                     key={comment.id}
+                    id={`comment-${comment.id}`}
                     className="border p-3 rounded bg-gray-100 shadow-sm flex flex-row justify-between items-center"
                   >
-                    {isEditing ? (
-                      <form
-                        onSubmit={(e) => handleEditSubmit(e, comment)}
-                        className="mt-2 flex flex-row justify-center items-center space-x-4"
-                      >
-                        <textarea
-                          className="w-full border rounded-lg p-2"
-                          value={editedComment}
-                          onChange={(e) => setEditedComment(e.target.value)}
-                        />
-                        <button
-                          className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                          type="submit"
-                        >
-                          Save
-                        </button>
-                      </form>
-                    ) : (
-                      <p className="text-gray-900">{comment.text}</p>
-                    )}
                     <div className="flex flex-row justfify-center items-center space-x-4">
-                      <p className="text-sm font-semibold text-gray-700">
+                    <p className="text-sm font-semibold text-gray-700">
                         Commented By {comment.customer.username}
                       </p>
+                    <p className="text-teal-900 font-bold">{comment.text}</p>
                       {localStorage.getItem("user") ===
                         comment.customer?.username && (
                         <div className="flex space-x-2">
-                          {/* Edit Icon */}
-                          <button onClick={() => setIsEditing(!isEditing)}>
-                            <Pencil className="w-5 h-5 text-blue-500 hover:text-blue-700 cursor-pointer" />
-                          </button>
-                          {/* Delete Icon */}
-                          <button onClick={() => handleDelete(comment.id)}>
-                            <Trash className="w-5 h-5 text-red-500 hover:text-red-700 cursor-pointer" />
-                          </button>
+                          {editingId === comment.id ? (
+                            <form
+                              onSubmit={(e) => handleEditSubmit(e, comment)}
+                              className="mt-2 flex flex-row justify-center items-center space-x-4"
+                            >
+                              <textarea
+                                className="w-full border rounded-lg p-2"
+                                value={editedComment}
+                                onChange={(e) => setEditedComment(e.target.value)}
+                              />
+                              <button
+                                className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                type="submit"
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-green-600"
+                                type="button"
+                                onClick={() => toggleComment(comment.id)}
+                              >
+                                Cancel
+                              </button>
+                            </form>
+                          ) : (
+                            <div>
+                              <button onClick={() => toggleComment(comment.id)}>
+                                <Pencil className="w-5 h-5 text-blue-500 hover:text-blue-700 cursor-pointer" />
+                              </button>
+                              {/* Delete Icon */}
+                              <button onClick={() => handleDelete(comment.id)}>
+                                <Trash className="w-5 h-5 text-red-500 hover:text-red-700 cursor-pointer" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
