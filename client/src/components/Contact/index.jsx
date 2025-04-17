@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Layout from "../Layout";
+import { toast } from 'react-toastify'; 
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +33,9 @@ const Contact = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send the message.");
+        toast("Failed to send the message.");
+      } else {
+        toast("Message sent")
       }
 
       // If the request was successful, set the form submission state to true

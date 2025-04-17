@@ -1,6 +1,7 @@
 import Layout from "../Layout";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const [successful, setSuccessful] = useState(false);
@@ -33,6 +34,7 @@ const Register = () => {
 
       if (response.ok) {
         setSuccessful(true);
+        toast("You are registered");
       } else {
         const errorData = await response.json();
         console.log("Registration failed:", errorData);

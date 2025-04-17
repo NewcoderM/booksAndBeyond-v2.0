@@ -1,7 +1,19 @@
 import bannerImage from "/assets/images/banner.jpg";
 import Layout from "../Layout";
+import { toast } from 'react-toastify';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const Home = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.justLoggedIn) {
+      toast.success("You are logged in");
+      // Clear the flag so it doesn't show on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
   return (
     <Layout>
       <div className="relative h-full w-full flex flex-col justify-center items-center text-center text-white">
