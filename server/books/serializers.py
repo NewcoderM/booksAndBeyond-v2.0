@@ -3,6 +3,7 @@ from .models import Book, Comment
 
 class CommentSerializer(serializers.ModelSerializer):
     customer = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
         fields = '__all__'
@@ -18,7 +19,13 @@ class CommentSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
-        instance.text = validated_data.get('text', instance.text) 
+        """
+        Update Comment instance using iteration over updatable fields
+        """
+        updatable_fields = ['text']
+        for field in updatable_fields:
+            if field in validated_data:
+                setattr(instance, field, validated_data[field])
         instance.save()
         return instance
 
