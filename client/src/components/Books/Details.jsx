@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "../Layout";
 import { Pencil, Trash } from "lucide-react";
+import { toast } from 'react-toastify';
 
 const Details = () => {
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const Details = () => {
         `${import.meta.env.VITE_API_URL}/books/${id}/comments`
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch comments");
+        toast("Failed to fetch comments");
       }
       const data = await response.json();
       setComments(data);
@@ -48,7 +49,7 @@ const Details = () => {
           `${import.meta.env.VITE_API_URL}/books/${id}`
         );
         if (!response.ok) {
-          throw new Error("Failed to fetch book details");
+          toast("Failed to fetch book details");
         } else {
           await fetchComments();
         }
@@ -95,7 +96,9 @@ const Details = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to add comment");
+        toast("Failed to add comment");
+      } else {
+        toast("Comment added")
       }
 
       const addedComment = await response.json();
@@ -111,11 +114,11 @@ const Details = () => {
     e.preventDefault();
 
     if (!editedComment.trim()) {
-      setError("Edited comment cannot be empty.");
+      toast("Edited comment cannot be empty.");
       return;
     }
     if (editedComment.length > 300) {
-      setError("Edited comment cannot exceed 300 characters.");
+      toast("Edited comment cannot exceed 300 characters.");
       return;
     }
 
@@ -137,7 +140,9 @@ const Details = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update comment");
+        toast("Failed to update comment");
+      } else {
+        toast("Comment updated")
       }
 
       const updatedComment = await response.json();
@@ -172,7 +177,9 @@ const Details = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to delete comment");
+        toast("Failed to delete comment");
+      } else {
+        toast("Comment deleted")
       }
 
       setComments((prevComments) =>

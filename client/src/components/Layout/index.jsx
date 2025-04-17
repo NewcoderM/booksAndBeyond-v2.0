@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import Navbar from "../Base/Navbar";
 import Footer from "../Base/Footer";
+import { ToastContainer } from 'react-toastify';
 
 const Layout = ({ children }) => {
   return (
@@ -13,6 +14,8 @@ const Layout = ({ children }) => {
       <div className="row-span-1 h-full">
         <Footer />
       </div>
+
+      <ToastContainer />
     </div>
   );
 };
