@@ -6,6 +6,8 @@ import Contact from "./components/Contact";
 import Books from "./components/Books";
 import Home from "./components/Home";
 import NotFound from "./notFound";
+import PrivacyPolicy from "./privacy-policy";
+import TermsOfService from "./terms";
 
 const BaseRouter = () => {
   return (
@@ -17,6 +19,8 @@ const BaseRouter = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
