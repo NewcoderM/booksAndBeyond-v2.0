@@ -29,19 +29,25 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # Debug mode
 DEBUG = False
 
-# Hosts and CORS
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-]
-
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'booksandbeyond-v2-0-server.onrender.com',
+    'booksandbeyond-v2-0.onrender.com',
+]
+
+# CORS: allow requests from frontend
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:4173",
+    "https://booksandbeyond-v2-0.onrender.com",
+]
+
+# CSRF: trusted origins for forms & cookies
+CSRF_TRUSTED_ORIGINS = [
     "https://booksandbeyond-v2-0.onrender.com",
 ]
 
