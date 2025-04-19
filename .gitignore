@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdm.toml
+*.pdm.lock
+.Python
+env/
+venv/
+ENV/
+*.env
+*.env.*
+
+# Virtualenv
+*.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Django
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+.env
+.secret
+instance/
+settings/local.py
+settings/dev.py
+
+# DRF-specific
+*.swagger
+*.api-schema.json
+*.postman_collection.json
+
+# Migrations
+**/migrations/
+**/migrations/*.py
+**/migrations/*.pyc
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# VS Code
+.vscode/
+
+# JetBrains (PyCharm etc.)
+.idea/
+
+# Mac
+.DS_Store
+
+# Others
+*.bak
+*.tmp
+*.swp
+*.swo
+*.orig
+coverage/
+htmlcov/
+dist/
+build/
+*.egg-info/
+.eggs/
+MANIFEST
+
+# Docker
+*.pid
+docker-compose.override.yml
