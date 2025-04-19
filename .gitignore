@@ -53,8 +53,11 @@ settings/dev.py
 # JetBrains (PyCharm etc.)
 .idea/
 
-# Mac
+# macOS
 .DS_Store
+
+# JavaScript/Node
+node_modules/
 
 # Others
 *.bak
