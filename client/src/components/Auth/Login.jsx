@@ -1,6 +1,7 @@
 import Layout from "../Layout";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -32,7 +33,7 @@ const Login = () => {
         localStorage.setItem("user", data.username);
       } else {
         const errorData = await response.json();
-        console.log("Login failed:", errorData);
+        toast("Username doesn't exist or password doesn't match")
       }
     } catch (error) {
       console.error("Error during login:", error);
