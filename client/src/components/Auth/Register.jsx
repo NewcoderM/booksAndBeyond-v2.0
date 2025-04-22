@@ -32,12 +32,18 @@ const Register = () => {
         }
       );
 
+      console.log(response)
+
       if (response.ok) {
         setSuccessful(true);
         toast("You are registered");
       } else {
         const errorData = await response.json();
-        console.log("Registration failed:", errorData);
+        const errorMessage = Object.values(errorData)
+        .flat()
+        .join('\n');
+      
+        toast(errorMessage);
       }
     } catch (error) {
       console.error("Error during registration:", error);
